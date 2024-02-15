@@ -1,0 +1,39 @@
+<br>
+<div class="video-window">
+    @if (IsActive)
+    {
+        <button type="button" @onclick="() => { IsActive = false; PathToVideo = string.Empty; }" class="close-button">Закрыть видео</button>
+        <br>
+        <video controls autoplay="autoplay">
+            <source src="Videos/@PathToVideo" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+        <br>
+        <p class="normal-text">@Description</p>
+    }
+    else if (string.IsNullOrEmpty(PathToVideo))
+    {
+        <h3 class="title-text">Выберите что вам нужно перевести снизу и тут появится видео с переводом на язык жестов</h3>
+    }
+    else
+    {
+        <button type="button" class="video-button" @onclick="() => { IsActive = true; }">Перевод "@Letter" на язык жестов найден! <br>Нажмите для воспроизведения видео</button>
+    }
+</div>
+
+@code {
+    private bool _isActive;
+    public string? Description, Letter;
+    public string? PathToVideo;
+
+    public bool IsActive
+    {
+        get => _isActive;
+        set
+        {
+            _isActive = value;
+            StateHasChanged();
+        }
+    }
+
+}

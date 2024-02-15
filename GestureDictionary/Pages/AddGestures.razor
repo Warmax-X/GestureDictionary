@@ -1,0 +1,96 @@
+@page "/Add"
+@using GestureDictionary.Services
+@using GestureDictionary.Models
+@using GestureDictionary.Enums
+
+@inject FileController FCtrl
+@inject DbController DCtrl
+@inject DescriptionCreator DСreator 
+
+<link rel="stylesheet" type="text/css" href="css/site.css">
+
+<a href="/" class="back-button">Вернуться на главную</a>
+
+<div class="form" style="margin-top: 0;">
+    <h1 class="success-text">@_finalNotification</h1>
+</div>
+
+<form class="form">
+    <label>Введите значение жеста:</label>
+    <input type="text" class="form-control" style="max-width: 600px; font-size: 25px" placeholder="Слово или фраза" @bind="_wordPhrase"/>
+    <div class="warning-text">@_wMessage</div>
+    <label>Введите описание жеста:</label>
+    <input type="text" class="form-control" style="max-width: 600px; font-size: 25px" placeholder="Описание" @bind="_description"/>
+    <button class="auto-button"  type="button" @onclick="() => { _description = DСreator.Create(_wordPhrase, out _dMessage); }">Автоматическое заполнение описания</button>
+    <div class="warning-text">@_dMessage</div>
+    <br><label>Загрузите видео с демонстрацией жеста:</label>
+</form>
+
+<form @onsubmit="() => { FCtrl.OnSubmit(_isConfirm); }" class="form" style="margin-top: 1%;">
+    <InputFile OnChange="FCtrl.OnInputFileChange"/>
+    <br/>
+    <div class="error-text">@DCtrl.ErrorMessage @FCtrl.ErrorMessage @_fMessage</div>
+    <button type="submit" class="upload-button" @onclick="ClickEvent">Добавить жест</button>
+</form>
+
+@code {
+    private string? _wordPhrase, _description;
+    private string? _wMessage, _dMessage, _fMessage, _finalNotification; // поля сообщения для отображения сообщений для пользователя
+    private TypeOfGesture _addingType;
+    private bool _isConfirm; // переменная для считывания подтверждения от контролерра базы данных 
+
+    private void ClickEvent()
+    {
+        ClearMessage(); //очистка сообщений
+
+        if (!CheckConditions()) // проверка соответсвтия условиям
+            return;
+
+
+        _addingType = _wordPhrase != null && _wordPhrase.Contains(' ') ? TypeOfGesture.PhraseGesture : TypeOfGesture.WordGesture; // определение типа жеста (одно слово или несколько слов, то есть фраза)
+
+        DCtrl.AddGesture(_wordPhrase, _description, FCtrl.PathToVideo, _addingType, out _isConfirm); // вызов меттода для добавления нового жеста
+
+        ClearInputFields(); // очистка полей ввода
+
+        @if (_addingType is TypeOfGesture.WordGesture && _isConfirm) // присвоение сообещнию занчения в зависимости от типа добавленного жеста
+            _finalNotification = "Вы успешно добавили новое слово!";
+        @if (_addingType is TypeOfGesture.PhraseGesture && _isConfirm)
+            _finalNotification = "Вы успешно добавили новую фразу!";
+    }
+
+    private void ClearMessage()
+    {
+        _finalNotification = null;
+        _wMessage = null;
+        _dMessage = null;
+        _fMessage = null;
+    }
+
+    private bool CheckConditions()
+    {
+        if (string.IsNullOrEmpty(_wordPhrase))
+        {
+            _wMessage = "Введите значение жеста";
+            return false;
+        }
+        if (string.IsNullOrEmpty(_description))
+        {
+            _dMessage = "Введите описание жеста";
+            return false;
+        }
+        if (FCtrl.FileType != "video/mp4")
+        {
+            _fMessage = "Выберите файл в формате .mp4";
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ClearInputFields()
+    {
+        _wordPhrase = null;
+        _description = null;
+    }
+}

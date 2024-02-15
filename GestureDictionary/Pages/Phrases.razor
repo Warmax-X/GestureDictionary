@@ -1,0 +1,45 @@
+@page "/Phrases"
+
+@using GestureDictionary.Services
+@using GestureDictionary.Pages.Components
+@using GestureDictionary.Models
+@using GestureDictionary.Enums
+
+@inject DbController Ctrl;
+
+<link rel="stylesheet" type="text/css" href="css/site.css">
+
+<a href="/" class="back-button">Вернуться на главную</a>
+
+<VideoComponent @ref="_videoComponent"></VideoComponent>
+
+<div class="phrase-table-container">
+    <table class="phrase-table">
+        @foreach (var phrase in Ctrl.GetKeys(Type)) // получение списка жестов фраз
+        {
+            <tr>
+                <td>
+                    <button type="button" @onclick='() => { ClickEvent(phrase); }'>@phrase</button>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+        private const TypeOfGesture Type = TypeOfGesture.PhraseGesture; // определение типа жестов страницы
+    private string? _description, _phrase;
+    private VideoComponent _videoComponent = new(); // создание видеокомпонента
+
+    private void ClickEvent(string? key)
+    {
+        if (key is null)
+            return;
+
+        _videoComponent.IsActive = false;
+        _videoComponent.PathToVideo = Ctrl.GetVideo(key, Type, out _description, out _phrase); // получение видео для выбранного жеста
+        _videoComponent.Description = _description; // получение описания жеста
+        _videoComponent.Letter = _phrase; //получение фразы жеста
+    }
+
+}

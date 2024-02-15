@@ -1,0 +1,46 @@
+@page "/Alphabet"
+@using GestureDictionary.Services
+@using GestureDictionary.Pages.Components
+@using GestureDictionary.Models
+@using GestureDictionary.Enums
+
+@inject DbController Ctrl;
+
+<link rel="stylesheet" type="text/css" href="css/site.css">
+
+<a href="/" class="back-button">Вернуться на главную</a>
+
+<VideoComponent @ref="_videoComponent"></VideoComponent> 
+
+<div class="word-table-container">
+    <table class="word-table">
+        @foreach (var chunk in Ctrl.GetKeys(Type).Chunk(11)) // разбитие списка букв на подписки по 11 букв (итого 3 строки таблицы по 11 столцов)
+        {
+            <tr>
+                @foreach (var letter in chunk)
+                {
+                    <td>
+                        <button type="button" @onclick='() => { ClickEvent(letter); }'>@letter</button>
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+        private const TypeOfGesture Type = TypeOfGesture.LetterGesture; // определение типа жестов страницы
+    private string? _description, _letter;
+    private VideoComponent _videoComponent = new(); // создание видеокомпонента
+
+    private void ClickEvent(string? key)
+    {
+        if (key is null)
+            return;
+
+        _videoComponent.IsActive = false;
+        _videoComponent.PathToVideo = Ctrl.GetVideo(key, Type, out _description, out _letter); // получение видео для выбранного жеста
+        _videoComponent.Description = _description; // получение описания жеста
+        _videoComponent.Letter = _letter; // получение буквы жеста 
+    }
+}
