@@ -69,7 +69,7 @@ a, .btn-link {
 }
 
 .container {
-    height: 100vh;
+    height: 95vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -290,15 +290,17 @@ a:hover {
 }
 
 .auto-button {
-    padding: 3px 3px;
+    padding: 3px 118px;
     background-color: lightskyblue;
     color: #333;
     border: none;
     text-decoration: none;
-    font-size: 20px; 
-    width: 595px;
+    font-size: 20px;
+    max-width: 600px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .auto-button:hover {
