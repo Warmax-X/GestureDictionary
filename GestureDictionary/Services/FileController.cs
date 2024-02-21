@@ -42,9 +42,13 @@ public class FileController // контролер файлов
         catch (Exception e) // ловля исключений
         {
             ErrorMessage = e.Message;
+            return;
         }
-
+        
         ErrorMessage = string.Empty;
+        PathToVideo = null; // очистка данных о файле
+        FileType = null;
         _selectedFile = null;
+        
     }
 }

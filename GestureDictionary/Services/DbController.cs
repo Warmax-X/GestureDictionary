@@ -114,8 +114,10 @@ public class DbController // контролеер базы данных
         catch (Exception e) // ловля исключений
         {
             ErrorMessage = e.Message;
+            return;
         }
 
+        ErrorMessage = string.Empty;
         isConfirm = true; // отправка подтверждения при успешном добавлении нового жеста
     }
 }
